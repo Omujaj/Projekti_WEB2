@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_
     }
 }
 
+
 $borrowed_books = [];
 foreach ($books as $book) {
     if (in_array($book['id'], $_SESSION['my_borrows'])) {
@@ -47,7 +48,7 @@ foreach ($books as $book) {
         .empty-state h2 { font-family: var(--font-heading); color: var(--text-dark); margin-bottom: 10px; font-size: 2rem;}
         .empty-state p { color: var(--text-gray); margin-bottom: 30px;}
         
-        
+        /* Stilizimi per butonat e Adminit */
         .admin-actions { display: flex; gap: 10px; width: 100%; }
         .btn-approve { background: #22c55e; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; flex: 1; font-size: 13px; transition: 0.2s;}
         .btn-approve:hover { background: #16a34a;}
