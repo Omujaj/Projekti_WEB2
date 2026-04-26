@@ -1,0 +1,46 @@
+:root {
+    --bg-dark: #1b263b; 
+    --bg-light: #f8f7f4; 
+    --primary-yellow: #f6a723;
+    --primary-yellow-hover: #df941c;
+    --accent: #FFB22C; 
+    --primary: #0B192C;
+    --text-light: #ffffff;
+    --text-dark: #111827;
+    --text-gray: #6b7280;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+}
+
+body { background: var(--bg-light); font-family: var(--font-body); margin: 0; color: var(--text-dark); }
+a { text-decoration: none; }
+
+
+.navbar { background-color: var(--primary); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+.nav-left { display: flex; align-items: center; gap: 40px; }
+.logo { font-size: 1.4rem; font-weight: 700; }
+.nav-links { list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; }
+.nav-links a { color: #cbd5e1; font-weight: 500; transition: color 0.3s; }
+.nav-links a:hover, .nav-links a.active { color: var(--primary-yellow); }
+.btn-login-nav {
+    background-color: var(--primary-yellow);
+    color: var(--primary); 
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    transition: opacity 0.2s;
+}
+
+.btn-login-nav:hover {
+    opacity: 0.9;
+}
+
+.nav-right { display: flex; align-items: center; gap: 15px; }
+.role-badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+.role-badge.admin { background-color: #dc2626; color: white; }
+.role-badge.student { background-color: var(--primary-yellow); color: var(--bg-dark); }
+.user-name { color: white; font-weight: 500; margin-right: 10px; }
+.btn-logout { border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 15px; border-radius: 4px; font-size: 14px; }
+.btn-logout:hover { border-color: white; }
