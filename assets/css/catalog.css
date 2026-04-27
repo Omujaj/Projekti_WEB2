@@ -44,3 +44,101 @@ a { text-decoration: none; }
 .user-name { color: white; font-weight: 500; margin-right: 10px; }
 .btn-logout { border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 15px; border-radius: 4px; font-size: 14px; }
 .btn-logout:hover { border-color: white; }
+
+
+.catalog-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+.header-section h1 { font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 5px; }
+.header-section p { color: var(--text-gray); margin-bottom: 30px; }
+
+
+.filters-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 15px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    flex-grow: 1;
+    max-width: 300px;
+}
+
+.search-icon {
+    color: #a0aec0;
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    color: var(--text-dark);
+    font-size: 14px;
+    font-family: var(--font-body);
+}
+
+.search-box input::placeholder {
+    color: #a0aec0;
+}
+
+.select-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 10px 35px 10px 15px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    background-color: transparent;
+    font-size: 14px;
+    color: var(--text-dark);
+    font-family: var(--font-body);
+    appearance: none; 
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%231a202c" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+}
+
+.btn-filter {
+    background-color: var(--accent); 
+    color: var(--primary); 
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: opacity 0.2s;
+}
+
+.btn-filter:hover {
+    opacity: 0.9;
+}
+
+.btn-reset {
+    background-color: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 9px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.btn-reset:hover {
+    background-color: rgba(11, 25, 44, 0.05); 
+}
