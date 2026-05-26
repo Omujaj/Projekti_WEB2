@@ -1,8 +1,14 @@
+/**
+ * 
+ * Handles: live search, modals, form validation, charts helper, pagination
+ */
+
+/* ---- NAVIGATION TOGGLE ---- */
 function toggleNav() {
     document.getElementById('navLinks')?.classList.toggle('open');
 }
 
-
+/* ---- MODAL HELPERS ---- */
 function openModal(id) {
     const overlay = document.getElementById(id);
     if (overlay) { overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
@@ -11,14 +17,14 @@ function closeModal(id) {
     const overlay = document.getElementById(id);
     if (overlay) { overlay.classList.remove('active'); document.body.style.overflow = ''; }
 }
-
+// Close modal on overlay click
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('active');
         document.body.style.overflow = '';
     }
 });
-
+// Close with ESC
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.active').forEach(m => {
@@ -28,6 +34,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+/* ---- LIVE SEARCH ---- */
 function initLiveSearch(inputId, tableBodyId, columns) {
     const input = document.getElementById(inputId);
     const tbody = document.getElementById(tableBodyId);
@@ -44,13 +51,13 @@ function initLiveSearch(inputId, tableBodyId, columns) {
             if (text.includes(q)) { row.style.display = ''; visible++; }
             else row.style.display = 'none';
         });
-   
+        // Show empty state
         const emptyRow = tbody.querySelector('.empty-row');
         if (emptyRow) emptyRow.style.display = visible === 0 ? '' : 'none';
     });
 }
 
-
+/* ---- BOOK CARD SEARCH  ---- */
 function initCatalogSearch() {
     const input = document.getElementById('catalogSearch');
     const grid  = document.getElementById('booksGrid');
@@ -65,7 +72,7 @@ function initCatalogSearch() {
     });
 }
 
-
+/* ---- CLIENT-SIDE PAGINATION ---- */
 function initPagination(tableBodyId, perPage = 10) {
     const tbody = document.getElementById(tableBodyId);
     const container = document.getElementById(tableBodyId + 'Pagination');
@@ -105,7 +112,7 @@ function initPagination(tableBodyId, perPage = 10) {
     render();
 }
 
-
+/* ---- PASSWORD STRENGTH ---- */
 function initPasswordStrength() {
     const pw = document.getElementById('password');
     const bar = document.getElementById('strengthBar');
@@ -124,7 +131,7 @@ function initPasswordStrength() {
     });
 }
 
-
+/* ---- IMAGE PREVIEW ---- */
 function previewImage(inputId, previewId) {
     const input   = document.getElementById(inputId);
     const preview = document.getElementById(previewId);
@@ -140,14 +147,14 @@ function previewImage(inputId, previewId) {
     });
 }
 
-
+/* ---- CONFIRM DELETE ---- */
 function confirmDelete(form, itemName) {
     if (confirm('Are you sure you want to delete "' + itemName + '"? This action cannot be undone.')) {
         form.submit();
     }
 }
 
-
+/* ---- SORT TABLE ---- */
 function sortTable(tableId, colIndex) {
     const table = document.getElementById(tableId);
     if (!table) return;
@@ -164,7 +171,7 @@ function sortTable(tableId, colIndex) {
     table.dataset.sortDir = asc ? 'desc' : 'asc';
 }
 
-
+/* ---- INIT ALL ---- */
 document.addEventListener('DOMContentLoaded', function() {
     initCatalogSearch();
     initPasswordStrength();
@@ -175,3 +182,4 @@ document.addEventListener('DOMContentLoaded', function() {
     initPagination('borrowsTableBody', 10);
     previewImage('coverInput', 'coverPreview');
 });
+s
