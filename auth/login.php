@@ -1,88 +1,110 @@
 <?php
-session_start();
-require_once '../includes/error_handler.php';
-require_once '../includes/data.php';
-require_once '../classes/User.php'; 
+require_once '../config/database.php';
+require_once '../config/auth_helper.php';
+
+// Redirect if already logged in
+if (isset($_SESSION['user_id'])) {
+    $role = $_SESSION['user_role'];
+    if ($role === 'admin') header('Location: ../admin/dashboard.php');
+    elseif ($role === 'librarian') header('Location: ../librarian/borrow_requests.php');
+    else header('Location: ../user/catalog.php');
+    exit();
+}
 
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email    = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    $emailPattern = "/^[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/";
-    
-    if (!preg_match($emailPattern, $email)) {
-        $error = "Invalid email format!";
-    } elseif (empty($password)) {
-        $error = "Please enter your password!";
+    // Basic validation
+    if (empty($email) || empty($password)) {
+        $error = 'Please fill in all fields.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Invalid email address.';
     } else {
-        if (array_key_exists($email, $users) && $users[$email]['password'] === $password) {
-            
-            if ($users[$email]['role'] === 'admin') {
-                $loggedInUser = new Admin($users[$email]['name'], $email);
+        $db = getDB();
+        // Use prepared statement to prevent SQL injection
+        $stmt = $db->prepare("SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.email = ? AND u.is_active = 1");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($user && password_verify($password, $user['password'])) {
+            // Regenerate session ID for security
+            session_regenerate_id(true);
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_role'] = $user['role_name'];
+            $_SESSION['user_email'] = $user['email'];
+
+            logActivity('user_login', "User '{$user['name']}' logged in.");
+
+            // Redirect based on role
+            if ($user['role_name'] === 'admin') {
+                header('Location: ../admin/dashboard.php');
+            } elseif ($user['role_name'] === 'librarian') {
+                header('Location: ../librarian/borrow_requests.php');
             } else {
-                $loggedInUser = new Student($users[$email]['name'], $email);
+                header('Location: ../user/catalog.php');
             }
-            
-            $_SESSION['user_email'] = $loggedInUser->getEmail();
-            $_SESSION['role'] = $loggedInUser->getRole();
-            $_SESSION['name'] = $loggedInUser->getName();
-            
-            header("Location: ../pages/catalog.php");
             exit();
         } else {
-            $error = "Incorrect email or password!";
+            $error = 'Invalid email or password.';
+            // Log failed attempt
+            logActivity('login_failed', "Failed login attempt for email: $email");
         }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Library </title>
-    <link rel="stylesheet" href="../assets/css/auth.css">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <title>Login — LibraryViona</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body class="auth-page">
-
-    <div class="auth-header">
-        <span class="logo-icon">📚</span> 
-        <h1>Library</h1>
-        <p>Library Management System</p>
-    </div>
-
     <div class="auth-container">
-        <h2>Welcome Back</h2>
-        <p class="auth-subtitle">Sign in to your account</p>
-        
-        <?php if (!empty($error)): ?>
-            <div class="alert-error"><?php echo $error; ?></div>
-        <?php endif; ?>
+        <div class="auth-brand">
+            <div class="brand-icon">📚</div>
+            <h1 class="brand-name">LibraryViona</h1>
+            <p class="brand-tagline">Library Management System</p>
+        </div>
 
-        <form action="login.php" method="POST">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="text" name="email" id="email" class="form-control" placeholder="lorida@student.com">
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="••••••••">
-            </div>
-            
-            <button type="submit" class="btn-dark" style="width: 100%;">Sign In</button>
-        </form>
+        <div class="auth-card">
+            <h2>Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to your account</p>
 
-        <div class="auth-link">
-            Don't have an account? <a href="register.php">Register here</a>
-            <br><br>
-            <a href="../index.php" style="color: var(--text-gray); font-weight: normal; font-size: 0.85rem;">← Back to Home</a>
+            <?php if ($error): ?>
+                <div class="alert alert-error"><?= sanitize($error) ?></div>
+            <?php endif; ?>
+            <?php if (isset($_GET['registered'])): ?>
+                <div class="alert alert-success">Registration successful! You can now log in.</div>
+            <?php endif; ?>
+
+            <form method="POST" action="" id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com"
+                           value="<?= sanitize($_POST['email'] ?? '') ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+            </form>
+
+            <p class="auth-link">Don't have an account? <a href="register.php">Register here</a></p>
+
+         
         </div>
     </div>
-
+    <script src="../assets/js/main.js"></script>
 </body>
 </html>
