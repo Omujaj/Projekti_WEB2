@@ -1,0 +1,4 @@
+<?php
+$conn = new mysqli('localhost','viona','1234','viona');
+if ($conn->connect_error) die($conn->connect_error);
+echo "Connected!";
